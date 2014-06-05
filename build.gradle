@@ -1,0 +1,22 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.10.+'
+    }
+}
+
+apply plugin: 'android-library'
+
+version = "0.1.0"
+group = "info.vividcode.android"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.1.0'
+}
