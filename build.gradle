@@ -20,3 +20,56 @@ android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
 }
+
+apply plugin: 'maven'
+
+/* defined at com/android/build/gradle/BasePlugin.groovy of Android Gradle plugin */
+def DIR_BUNDLES = 'bundles'
+
+/* See: http://stackoverflow.com/questions/17033878/generate-javadocs-with-android-gradle-plugin */
+android.libraryVariants.all { variant ->
+    if (variant.name == 'release') {
+        task("copyLicenseFile${variant.name.capitalize()}", type: Copy) {
+            from("./LICENSE.txt")
+            into("$project.buildDir/$DIR_BUNDLES/$variant.dirName")
+        }
+        bundleRelease.dependsOn project.tasks["copyLicenseFile${variant.name.capitalize()}"]
+    }
+}
+
+/* See: http://www.vandalsoftware.com/post/52468430435/publishing-an-android-library-aar-to-a-maven */
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "file:m2repo")
+
+        pom.artifactId = 'listviews'
+        pom.project {
+            name 'android-lib-VCListViews'
+            packaging 'aar'
+            description 'Library for Android, which includes useful ListView subclasses.'
+            url 'https://github.com/nobuoka/android-lib-VCListViews'
+
+            scm {
+                url 'scm:git@github.com:nobuoka/android-lib-VCListViews.git'
+                connection 'scm:git@github.com:nobuoka/android-lib-VCListViews.git'
+                developerConnection 'scm:git@github.com:nobuoka/android-lib-VCListViews.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'nobuoka'
+                    name 'NOBUOKA Yu'
+                    email 'nobuoka+dev@vividcode.info'
+                }
+            }
+        }
+    }
+}
